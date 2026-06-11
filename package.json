@@ -1,0 +1,24 @@
+{
+  "name": "aissets",
+  "version": "0.0.1",
+  "description": "A 3D assets generate tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fn-a/aissets.git"
+  },
+  "keywords": [
+    "ai",
+    "3d",
+    "assets"
+  ],
+  "author": "fn-a <mr.fna.co@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fn-a/aissets/issues"
+  },
+  "homepage": "https://github.com/fn-a/aissets#readme"
+}
