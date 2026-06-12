@@ -42,9 +42,6 @@ importers:
       '@aissets/hi3d':
         specifier: workspace:*
         version: link:../mods/hi3d
-      '@aissets/hunyuan3d':
-        specifier: workspace:*
-        version: link:../mods/hunyuan3d
       '@aissets/hyper3d':
         specifier: workspace:*
         version: link:../mods/hyper3d
@@ -69,16 +66,6 @@ importers:
         version: 6.0.3
 
   mods/hi3d:
-    dependencies:
-      '@aissets/core':
-        specifier: workspace:*
-        version: link:../../core
-    devDependencies:
-      typescript:
-        specifier: ^6.0.3
-        version: 6.0.3
-
-  mods/hunyuan3d:
     dependencies:
       '@aissets/core':
         specifier: workspace:*

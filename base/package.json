@@ -17,7 +17,6 @@
     "dependencies": {
         "@aissets/core": "workspace:*",
         "@aissets/hi3d": "workspace:*",
-        "@aissets/hunyuan3d": "workspace:*",
         "@aissets/hyper3d": "workspace:*",
         "@aissets/meshy": "workspace:*",
         "@aissets/tripo3d": "workspace:*"

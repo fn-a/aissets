@@ -12,7 +12,6 @@ AI 3D model generation CLI tool — create, query, and download 3D assets from m
 | `tripo3d`  | Tripo3D - AI 3D generation (TripoSR)|
 | `hi3d`     | Hi3D - 3D model generation          |
 | `hyper3d`  | Hyper3D - AI 3D model generation    |
-| `hunyuan3d`| Hunyuan3D - Tencent Hunyuan 3D      |
 
 ## Install
 
@@ -47,10 +46,6 @@ Create `config.json` in your working directory. Each platform module reads its o
     "hyper3d": {
       "apiKey": "your-hyper3d-api-key",
       "baseUrl": "https://api.hyper3d.ai"
-    },
-    "hunyuan3d": {
-      "apiKey": "your-hunyuan3d-api-key",
-      "baseUrl": "https://hunyuan.tencentcloudapi.com"
     }
   }
 }
