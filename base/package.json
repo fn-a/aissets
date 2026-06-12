@@ -1,0 +1,29 @@
+{
+    "name": "@aissets/base",
+    "version": "0.0.1",
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./src/index.ts",
+            "import": "./src/index.ts"
+        }
+    },
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "clean": "rm -rf dist",
+        "check": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@aissets/core": "workspace:*",
+        "@aissets/hi3d": "workspace:*",
+        "@aissets/hunyuan3d": "workspace:*",
+        "@aissets/hyper3d": "workspace:*",
+        "@aissets/meshy": "workspace:*",
+        "@aissets/tripo3d": "workspace:*"
+    },
+    "devDependencies": {
+        "@types/node": "^25.7.0",
+        "typescript": "^6.0.3"
+    }
+}

@@ -1,24 +1,70 @@
 {
-  "name": "aissets",
-  "version": "0.0.1",
-  "description": "A 3D assets generate tool",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/fn-a/aissets.git"
-  },
-  "keywords": [
-    "ai",
-    "3d",
-    "assets"
-  ],
-  "author": "fn-a <mr.fna.co@gmail.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/fn-a/aissets/issues"
-  },
-  "homepage": "https://github.com/fn-a/aissets#readme"
+    "name": "aissets",
+    "version": "0.0.1",
+    "author": "fn-a <mr.fna.co@gmail.com>",
+    "description": "AISSETS - CLI tool for AI 3D model generation platforms",
+    "license": "MIT",
+    "type": "module",
+    "homepage": "https://github.com/fn-a/aissets#readme",
+    "bugs": "https://github.com/fn-a/aissets/issues",
+    "repository": "https://github.com/fn-a/aissets.git",
+    "bin": {
+        "aissets": "dist/main.js"
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "start": "tsx main.ts",
+        "dev": "tsx watch main.ts",
+        "build": "tsup",
+        "build:repos": "tsc && pnpm -r run build",
+        "clean": "rm -rf dist && pnpm -r run clean",
+        "check": "tsc --noEmit && pnpm -r run check",
+        "format": "prettier --write '**/*.{ts,json,yaml,md}'",
+        "format:check": "prettier --check '**/*.{ts,json,yaml,md}'"
+    },
+    "prettier": {
+        "semi": true,
+        "singleQuote": true,
+        "tabWidth": 4,
+        "trailingComma": "all",
+        "printWidth": 100,
+        "bracketSpacing": true,
+        "arrowParens": "always",
+        "endOfLine": "lf"
+    },
+    "tsup": {
+        "entry": ["main.ts"],
+        "format": ["esm"],
+        "target": "node18",
+        "clean": true,
+        "dts": false,
+        "splitting": false,
+        "sourcemap": false,
+        "metafile": false,
+        "shims": false,
+        "banner": {
+            "js": "#!/usr/bin/env node"
+        }
+    },
+    "dependencies": {
+        "commander": "^15.0.0"
+    },
+    "devDependencies": {
+        "@aissets/base": "workspace:*",
+        "@aissets/core": "workspace:*",
+        "@types/node": "^25.7.0",
+        "prettier": "^3.8.3",
+        "tsup": "^8.5.1",
+        "tsx": "^4.7.0",
+        "typescript": "^6.0.3"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "engines": {
+        "node": ">=18.0.0",
+        "pnpm": ">=8.0.0"
+    }
 }
