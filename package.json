@@ -1,6 +1,6 @@
 {
     "name": "aissets",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "author": "fn-a <mr.fna.co@gmail.com>",
     "description": "AISSETS - CLI tool for AI 3D model generation platforms",
     "license": "MIT",
@@ -35,8 +35,12 @@
         "endOfLine": "lf"
     },
     "tsup": {
-        "entry": ["main.ts"],
-        "format": ["esm"],
+        "entry": [
+            "main.ts"
+        ],
+        "format": [
+            "esm"
+        ],
         "target": "node18",
         "clean": true,
         "dts": false,
