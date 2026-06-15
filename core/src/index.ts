@@ -14,3 +14,4 @@ export type {
 
 export { pickConfig, loadConfig } from './config';
 export { BaseApiClient } from './client';
+export { downloadFiles } from './assets';

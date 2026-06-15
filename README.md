@@ -6,12 +6,12 @@ AI 3D model generation CLI tool — create, query, and download 3D assets from m
 
 ## Supported Platforms
 
-| Platform  | Description                          |
-| --------- | ------------------------------------ |
-| `meshy`   | Meshy - AI 3D model generation       |
-| `tripo3d` | Tripo3D - AI 3D generation (TripoSR) |
-| `hi3d`    | Hi3D - 3D model generation           |
-| `hyper3d` | Hyper3D - AI 3D model generation     |
+| Platform   | Description                           |
+| ---------- | ------------------------------------- |
+| `meshy`    | Meshy - AI 3D model generation        |
+| `tripo3d`  | Tripo3D - AI 3D generation (TripoSR)  |
+| `hi3d`     | Hi3D - 3D model generation            |
+| `hyper3d`  | Hyper3D - AI 3D model generation      |
 
 ## Install
 
@@ -27,26 +27,12 @@ Create `config.json` in your working directory. Each platform module reads its o
 
 ```json
 {
-    "default": {
-        "timeout": 300000
-    },
+    "default": { "timeout": 300000 },
     "platforms": {
-        "meshy": {
-            "apiKey": "your-meshy-api-key",
-            "baseUrl": "https://api.meshy.ai"
-        },
-        "tripo3d": {
-            "apiKey": "your-tripo3d-api-key",
-            "baseUrl": "https://api.tripo3d.ai"
-        },
-        "hi3d": {
-            "apiKey": "your-hi3d-api-key",
-            "baseUrl": "https://api.hitem3d.ai"
-        },
-        "hyper3d": {
-            "apiKey": "your-hyper3d-api-key",
-            "baseUrl": "https://api.hyper3d.ai"
-        }
+        "meshy":   { "apiKey": "your-key", "baseUrl": "https://api.meshy.ai" },
+        "tripo3d": { "apiKey": "your-key", "baseUrl": "https://api.tripo3d.com" },
+        "hi3d":    { "apiKey": "client_id:client_secret", "baseUrl": "https://api.hitem3d.ai" },
+        "hyper3d": { "apiKey": "your-key", "baseUrl": "https://api.hyper3d.ai" }
     }
 }
 ```
@@ -57,59 +43,77 @@ Use `-c` to specify a custom config path:
 aissets -c /path/to/config.json create meshy -i image.png
 ```
 
-### 2. List Available Platforms
+### 2. One-Shot Generation
+
+```bash
+# Pick a random platform
+aissets run -p "a red sports car"
+
+# Specify the platform
+aissets run meshy -i https://example.com/input.png -f obj
+
+# Run on all platforms
+aissets run -p "prompt" --all
+
+# Custom download dir and poll interval
+aissets run tripo3d -p "prompt" -d ./output --poll 5000
+```
+
+### 3. Step-by-Step Workflow
+
+```bash
+# Create a task
+# Image-to-3D
+aissets create meshy -i https://example.com/image.png -f glb
+# Text-to-3D
+aissets create tripo3d -p "a red sports car" -f obj
+# With extra options
+aissets create meshy -i input.png -f glb -o '{"quality":"high"}'
+
+# Check status
+aissets status meshy <task-id>
+
+# Get result (auto-downloads to assets/<platform>/)
+aissets result meshy <task-id>
+aissets result meshy <task-id> -d ./output
+
+# Wait for completion then download
+aissets wait meshy <task-id> --poll 5000
+```
+
+### 4. List Platforms
 
 ```bash
 aissets list
 ```
 
-### 3. Create a Generation Task
+## Commands
 
-```bash
-# Image-to-3D
-aissets create meshy -i https://example.com/image.png -f glb
+| Command | Description |
+| ------- | ----------- |
+| `run [platform]` | One-shot full pipeline: create → wait → download |
+| `create <platform>` | Submit a generation task |
+| `status <platform> <taskId>` | Check task status |
+| `result <platform> <taskId>` | Get result and download files |
+| `wait <platform> <taskId>` | Poll until completion, then download |
+| `list` | List available platforms |
 
-# Text-to-3D
-aissets create tripo3d -p "a red sports car" -f obj
+## Options
 
-# With extra options
-aissets create meshy -i input.png -f glb -o '{"quality":"high"}'
-```
+| Option                 | Applies to | Description |
+| ---------------------- | ---------- | ----------- |
+| `-i, --image <url>`    | `run`, `create` | Input image URL |
+| `-p, --prompt <text>`  | `run`, `create` | Text-to-3D prompt |
+| `-f, --format <fmt>`   | `run`, `create` | Output format (glb/obj/fbx...), default: glb |
+| `-o, --options <json>` | `create`       | Extra platform options as JSON |
+| `-d, --download <dir>` | `run`, `result`, `wait` | Download dir (default: ./assets) |
+| `--poll <ms>`          | `run`, `wait`  | Poll interval (default: 3000) |
+| `--all`                | `run`          | Run on all platforms (overrides [platform]) |
+| `-c, --config <path>`  | global         | Config file path (default: ./config.json) |
+| `-h, --help`           | global         | Display help |
+| `-V, --version`        | global         | Output version |
 
-Options:
-
-| Option                 | Description                                  |
-| ---------------------- | -------------------------------------------- |
-| `-i, --image <url>`    | Input image URL                              |
-| `-p, --prompt <text>`  | Text-to-3D prompt                            |
-| `-f, --format <fmt>`   | Output format (glb/obj/fbx...), default: glb |
-| `-o, --options <json>` | Extra platform options as JSON               |
-
-### 4. Check Task Status
-
-```bash
-aissets status meshy <task-id>
-```
-
-### 5. Get Result
-
-```bash
-aissets result meshy <task-id>
-```
-
-### 6. Wait and Auto-Get Result
-
-```bash
-aissets wait meshy <task-id> --poll 5000
-```
-
-### Global Options
-
-| Option                | Description                               |
-| --------------------- | ----------------------------------------- |
-| `-c, --config <path>` | Config file path (default: ./config.json) |
-| `-h, --help`          | Display help                              |
-| `-V, --version`       | Output version                            |
+Downloaded files are organized by platform: `assets/meshy/`, `assets/tripo3d/`, etc.
 
 ## License
 
