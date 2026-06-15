@@ -6,12 +6,12 @@ AI 3D model generation CLI tool — create, query, and download 3D assets from m
 
 ## Supported Platforms
 
-| Platform   | Description                         |
-| ---------- | ----------------------------------- |
-| `meshy`    | Meshy - AI 3D model generation      |
-| `tripo3d`  | Tripo3D - AI 3D generation (TripoSR)|
-| `hi3d`     | Hi3D - 3D model generation          |
-| `hyper3d`  | Hyper3D - AI 3D model generation    |
+| Platform  | Description                          |
+| --------- | ------------------------------------ |
+| `meshy`   | Meshy - AI 3D model generation       |
+| `tripo3d` | Tripo3D - AI 3D generation (TripoSR) |
+| `hi3d`    | Hi3D - 3D model generation           |
+| `hyper3d` | Hyper3D - AI 3D model generation     |
 
 ## Install
 
@@ -27,27 +27,27 @@ Create `config.json` in your working directory. Each platform module reads its o
 
 ```json
 {
-  "default": {
-    "timeout": 300000
-  },
-  "platforms": {
-    "meshy": {
-      "apiKey": "your-meshy-api-key",
-      "baseUrl": "https://api.meshy.ai"
+    "default": {
+        "timeout": 300000
     },
-    "tripo3d": {
-      "apiKey": "your-tripo3d-api-key",
-      "baseUrl": "https://api.tripo3d.ai"
-    },
-    "hi3d": {
-      "apiKey": "your-hi3d-api-key",
-      "baseUrl": "https://api.hitem3d.ai"
-    },
-    "hyper3d": {
-      "apiKey": "your-hyper3d-api-key",
-      "baseUrl": "https://api.hyper3d.ai"
+    "platforms": {
+        "meshy": {
+            "apiKey": "your-meshy-api-key",
+            "baseUrl": "https://api.meshy.ai"
+        },
+        "tripo3d": {
+            "apiKey": "your-tripo3d-api-key",
+            "baseUrl": "https://api.tripo3d.ai"
+        },
+        "hi3d": {
+            "apiKey": "your-hi3d-api-key",
+            "baseUrl": "https://api.hitem3d.ai"
+        },
+        "hyper3d": {
+            "apiKey": "your-hyper3d-api-key",
+            "baseUrl": "https://api.hyper3d.ai"
+        }
     }
-  }
 }
 ```
 
@@ -78,12 +78,12 @@ aissets create meshy -i input.png -f glb -o '{"quality":"high"}'
 
 Options:
 
-| Option               | Description                              |
-| -------------------- | ---------------------------------------- |
-| `-i, --image <url>`  | Input image URL                          |
-| `-p, --prompt <text>`| Text-to-3D prompt                        |
-| `-f, --format <fmt>` | Output format (glb/obj/fbx...), default: glb |
-| `-o, --options <json>`| Extra platform options as JSON          |
+| Option                 | Description                                  |
+| ---------------------- | -------------------------------------------- |
+| `-i, --image <url>`    | Input image URL                              |
+| `-p, --prompt <text>`  | Text-to-3D prompt                            |
+| `-f, --format <fmt>`   | Output format (glb/obj/fbx...), default: glb |
+| `-o, --options <json>` | Extra platform options as JSON               |
 
 ### 4. Check Task Status
 
@@ -105,11 +105,11 @@ aissets wait meshy <task-id> --poll 5000
 
 ### Global Options
 
-| Option                | Description                  |
-| --------------------- | ---------------------------- |
+| Option                | Description                               |
+| --------------------- | ----------------------------------------- |
 | `-c, --config <path>` | Config file path (default: ./config.json) |
-| `-h, --help`          | Display help                 |
-| `-V, --version`       | Output version               |
+| `-h, --help`          | Display help                              |
+| `-V, --version`       | Output version                            |
 
 ## License
 

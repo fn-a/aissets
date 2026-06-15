@@ -10,7 +10,8 @@ import type {
 
 class Tripo3dClient extends BaseApiClient {
     constructor(config: PlatformConfig) {
-        config.baseUrl ||= 'https://api.tripo3d.ai';
+        // https://api.tripo3d.ai
+        config.baseUrl ||= 'https://api.tripo3d.com';
         super(config);
     }
 
@@ -32,10 +33,15 @@ class Tripo3dClient extends BaseApiClient {
 
 let client: Tripo3dClient | null = null;
 
+// document: https://platform.tripo3d.com/docs/introduction
+//           https://docs.tripo3d.ai/get-started/introduction.html
+// reference: https://platform.tripo3d.com/docs/general
+//            https://platform.tripo3d.ai/docs/quick-start
 export const tripo3d: PlatformPlugin = {
     name: 'tripo3d',
     description: 'Tripo3D - AI 3D model generation (TripoSR)',
-    website: "https://www.tripo3d.ai",
+    // https://www.tripo3d.ai
+    website: 'https://studio.tripo3d.com',
     init(rawConfig) {
         client = new Tripo3dClient(pickConfig(rawConfig, 'tripo3d'));
     },

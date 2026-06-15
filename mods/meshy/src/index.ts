@@ -32,10 +32,14 @@ class MeshyClient extends BaseApiClient {
 
 let client: MeshyClient | null = null;
 
+// document: https://docs.meshy.ai/en
+//           https://docs.meshy.ai/zh
+// reference: https://docs.meshy.ai/en/api/text-to-3d
+//            https://docs.meshy.ai/zh/api/text-to-3d
 export const meshy: PlatformPlugin = {
     name: 'meshy',
     description: 'Meshy - AI 3D model generation platform',
-    website: "https://www.meshy.ai",
+    website: 'https://www.meshy.ai',
     init(rawConfig) {
         client = new MeshyClient(pickConfig(rawConfig, 'meshy'));
     },

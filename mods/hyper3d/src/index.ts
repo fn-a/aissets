@@ -32,10 +32,14 @@ class Hyper3dClient extends BaseApiClient {
 
 let client: Hyper3dClient | null = null;
 
+// document: https://developer.hyper3d.ai/ 
+//           https://developer.hyper3d.ai/zh_cn
+// reference: https://developer.hyper3d.ai/api-specification/overview_reset_v
+//            https://developer.hyper3d.ai/zh_cn/api-specification/overview_reset_v
 export const hyper3d: PlatformPlugin = {
     name: 'hyper3d',
     description: 'Hyper3D - AI 3D model generation',
-    website: "https://hyper3d.ai",
+    website: 'https://hyper3d.ai',
     init(rawConfig) {
         client = new Hyper3dClient(pickConfig(rawConfig, 'hyper3d'));
     },

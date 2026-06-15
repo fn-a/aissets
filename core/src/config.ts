@@ -20,10 +20,7 @@ export function loadConfig(path?: string): AissetsConfig | null {
  * 各模块在 init() 中自行调用此函数决定如何取用配置。
  * 优先级: CLI overrides > 平台配置 > 默认配置 > 环境变量
  */
-export function pickConfig(
-    raw: AissetsConfig | null,
-    platform: string,
-): PlatformConfig {
+export function pickConfig(raw: AissetsConfig | null, platform: string): PlatformConfig {
     const platformCfg = raw?.platforms?.[platform] ?? {};
     const defaults = raw?.default ?? {};
 

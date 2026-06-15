@@ -32,10 +32,14 @@ class Hi3dClient extends BaseApiClient {
 
 let client: Hi3dClient | null = null;
 
+// document: https://docs.hi3d.ai/en/api/getting-started/introduction
+//           https://docs.hi3d.ai/zh/api/getting-started/introduction
+// reference: https://docs.hi3d.ai/en/api/api-reference/overview
+//            https://docs.hi3d.ai/zh/api/api-reference/overview
 export const hi3d: PlatformPlugin = {
     name: 'hi3d',
     description: 'Hi3D - 3D model generation',
-    website: "https://www.hi3d.ai",
+    website: 'https://www.hi3d.ai',
     init(rawConfig) {
         client = new Hi3dClient(pickConfig(rawConfig, 'hi3d'));
     },

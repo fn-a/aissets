@@ -1,5 +1,10 @@
 import { Command } from 'commander';
-import type { AissetsConfig, GenerationInput, GenerationOptions, ModelFileFormat } from '@aissets/core';
+import type {
+    AissetsConfig,
+    GenerationInput,
+    GenerationOptions,
+    ModelFileFormat,
+} from '@aissets/core';
 import { loadConfig } from '@aissets/core';
 import { getPlugin, plugins } from '@aissets/base';
 
