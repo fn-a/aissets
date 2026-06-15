@@ -1,6 +1,6 @@
 {
     "name": "aissets",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "author": "fn-a <mr.fna.co@gmail.com>",
     "description": "AISSETS - CLI tool for AI 3D model generation platforms",
     "license": "MIT",
