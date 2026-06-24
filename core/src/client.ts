@@ -12,6 +12,7 @@ import type {
  */
 export abstract class BaseApiClient {
     protected config: PlatformConfig;
+    abstract symbol: string;
 
     constructor(config: PlatformConfig) {
         this.config = {
@@ -29,20 +30,28 @@ export abstract class BaseApiClient {
     /** 获取生成结果 */
     abstract result(taskId: string): Promise<ModelResult>;
 
-    /** 等待任务完成并返回结果 */
-    async expect(taskId: string, pollIntervalMs = 3000): Promise<ModelResult> {
-        for (;;) {
+    /** 等待任务完成并返回结果，使用指数退避策略，最大间隔 30s */
+    async expect(taskId: string, pollIntervalMs = 5000, maxAttempts = 200): Promise<ModelResult> {
+        const MAX_INTERVAL = 30_000;
+        for (let i = 0; i < maxAttempts; i++) {
             const task = await this.status(taskId);
+            console.log(
+                `[${this.symbol}] Task ${taskId} status: ${task.status}` +
+                    (task.progress != null ? ` (${task.progress}%)` : ''),
+            );
             if (task.status === 'completed') {
                 return this.result(taskId);
             }
             if (task.status === 'failed' || task.status === 'cancelled') {
                 throw new Error(
-                    `Task ${taskId} ended with status "${task.status}": ${task.error ?? 'unknown error'}`,
+                    `[${this.symbol}] Task ${taskId} ended with status "${task.status}": ${task.error ?? 'unknown error'}`,
                 );
             }
-            await sleep(pollIntervalMs);
+            const delay = Math.min(pollIntervalMs << Math.min(i, 4), MAX_INTERVAL);
+            console.log(`[${this.symbol}] Next poll in ${delay / 1000}s (attempt ${i + 1}/${maxAttempts})`);
+            await sleep(delay);
         }
+        throw new Error(`[${this.symbol}] Task ${taskId} timed out after ${maxAttempts} attempts`);
     }
 
     /** 发送 HTTP 请求（子类可直接调用） */

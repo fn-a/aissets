@@ -37,7 +37,11 @@ npm install -g aissets
 }
 ```
 
-各平台模块自行从配置中提取所属段。优先级：平台配置段 > 默认配置段 > 环境变量（`AISSETS_API_KEY`、`AISSETS_BASE_URL`）。
+使用 `-c` 指定自定义配置文件路径：
+
+```bash
+aissets -c /path/to/config.json create meshy -i image.png
+```
 
 ### 2. 一键生成
 

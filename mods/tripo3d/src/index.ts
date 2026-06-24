@@ -56,12 +56,16 @@ function taskInfo(raw: Tripo3dResponse): TaskInfo {
         createdAt: raw.created_at ? new Date(raw.created_at).toISOString() : undefined,
         finishedAt: raw.finished_at ? new Date(raw.finished_at).toISOString() : undefined,
         error: raw.output?.error?.message,
+        raw,
     };
 }
 
 const KNOWN_FORMATS = ['glb', 'gltf', 'obj', 'fbx', 'usdz', 'stl', 'ply'];
 
 class Tripo3dClient extends BaseApiClient {
+    static readonly symbol = 'tripo3d';
+    symbol = Tripo3dClient.symbol;
+
     constructor(config: PlatformConfig) {
         // https://api.tripo3d.ai
         config.baseUrl ||= 'https://api.tripo3d.com';
@@ -92,7 +96,7 @@ class Tripo3dClient extends BaseApiClient {
         const raw = await this.request<Tripo3dResponse>(`/v1/tasks/${taskId}`);
         if (raw.status !== 'SUCCEEDED' && raw.output?.task_status !== 'SUCCEEDED') {
             throw new Error(
-                `Task ${taskId} not completed, current status: ${raw.status ?? raw.output?.task_status}`,
+                `[${Tripo3dClient.symbol}] Task ${taskId} not completed, current status: ${raw.status ?? raw.output?.task_status}`,
             );
         }
         const files: ModelFile[] = [];
@@ -142,12 +146,12 @@ let client: Tripo3dClient | null = null;
 // reference: https://platform.tripo3d.com/docs/general
 //            https://platform.tripo3d.ai/docs/quick-start
 export const tripo3d: PlatformPlugin = {
-    name: 'tripo3d',
+    name: Tripo3dClient.symbol,
     description: 'Tripo3D - AI 3D model generation (TripoSR)',
     // https://www.tripo3d.ai
     website: 'https://studio.tripo3d.com',
     init(rawConfig) {
-        client = new Tripo3dClient(pickConfig(rawConfig, 'tripo3d'));
+        client = new Tripo3dClient(pickConfig(rawConfig, Tripo3dClient.symbol));
     },
     create(input, options) {
         return ensure().create(input, options);
@@ -164,6 +168,6 @@ export const tripo3d: PlatformPlugin = {
 };
 
 function ensure(): Tripo3dClient {
-    if (!client) throw new Error('tripo3d plugin not initialized');
+    if (!client) throw new Error(`[${Tripo3dClient.symbol}] Plugin not initialized`);
     return client;
 }

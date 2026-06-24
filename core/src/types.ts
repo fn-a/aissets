@@ -38,6 +38,7 @@ export interface TaskInfo {
     /** 任务完成时间 (ISO 8601) */
     finishedAt?: string;
     error?: string;
+    raw: unknown;
 }
 
 /** 单个生成的模型文件 */

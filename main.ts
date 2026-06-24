@@ -20,6 +20,8 @@ const OPT = {
     EXTRA:    ['-o, --options <json>',  'Extra platform options as JSON', '{}'] as const,
 } as const;
 
+let cached: AissetsConfig | null | undefined;
+
 const program = new Command();
 
 program
@@ -176,13 +178,11 @@ async function pipeline(
 
 // ── 辅助函数 ──
 
-let cachedConfig: AissetsConfig | null | undefined;
-
 function gainConfig(): AissetsConfig | null {
-    if (cachedConfig === undefined) {
-        cachedConfig = loadConfig(program.opts().config);
+    if (cached === undefined) {
+        cached = loadConfig(program.opts().config);
     }
-    return cachedConfig;
+    return cached;
 }
 
 function resolvePlugin(name: string) {

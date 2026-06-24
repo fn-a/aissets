@@ -1,4 +1,4 @@
-import { BaseApiClient, pickConfig } from '@aissets/core';
+import { BaseApiClient, pickConfig, readImageBlob } from '@aissets/core';
 import type {
     PlatformConfig,
     GenerationInput,
@@ -45,6 +45,9 @@ const STATUS_MAP: Record<string, TaskStatus> = {
 };
 
 class Hyper3dClient extends BaseApiClient {
+    static readonly symbol = 'hyper3d';
+    symbol = Hyper3dClient.symbol;
+
     private baseUrl = '';
     private taskMeta = new Map<string, Hyper3dMeta>();
 
@@ -60,7 +63,7 @@ class Hyper3dClient extends BaseApiClient {
 
         if (input.type === 'image') {
             // 图片转 3D：下载图片并以文件形式上传
-            const blob = await this.fetchImage(input.url);
+            const blob = await readImageBlob(input.url);
             form.append('images', blob, 'input.png');
         } else {
             // 文字转 3D
@@ -81,7 +84,7 @@ class Hyper3dClient extends BaseApiClient {
         const subscriptionKey = meta.jobs?.subscription_key ?? '';
         this.taskMeta.set(uuid, { uuid, subscriptionKey });
 
-        return { id: uuid, status: 'pending' };
+        return { id: uuid, status: 'pending', raw: meta };
     }
 
     /** 查询状态 — JSON POST with subscription_key */
@@ -92,12 +95,12 @@ class Hyper3dClient extends BaseApiClient {
             headers: { 'Content-Type': 'application/json; charset=utf-8' },
             body: JSON.stringify({ subscription_key: meta?.subscriptionKey ?? '' }),
         });
-
         const job = raw.jobs?.[0];
         return {
             id: taskId,
             status: STATUS_MAP[job?.status ?? ''] ?? 'pending',
             error: raw.error !== 'OK' ? raw.message : undefined,
+            raw: raw,
         };
     }
 
@@ -137,23 +140,17 @@ class Hyper3dClient extends BaseApiClient {
             const res = await fetch(url, { method: 'POST', headers, body: form, signal: controller.signal });
             if (!res.ok) {
                 const text = await res.text().catch(() => '');
-                throw new Error(`HTTP ${res.status} ${res.statusText}: ${text}`);
+                throw new Error(`[${Hyper3dClient.symbol}] HTTP ${res.status} ${res.statusText}: ${text}`);
             }
             return (await res.json()) as T;
+        } catch (err) {
+            console.error(`[${Hyper3dClient.symbol}] POST ${url} → ${err}`);
+            throw err;
         } finally {
             clearTimeout(timer);
         }
     }
 
-    private async fetchImage(imageUrl: string): Promise<Blob> {
-        const res = await fetch(imageUrl);
-        if (!res.ok) {
-            throw new Error(`Failed to fetch image: HTTP ${res.status}`);
-        }
-        const arrayBuffer = await res.arrayBuffer();
-        const contentType = res.headers.get('content-type') ?? 'image/png';
-        return new Blob([arrayBuffer], { type: contentType });
-    }
 }
 
 // ── 插件导出 ──
@@ -165,11 +162,11 @@ let client: Hyper3dClient | null = null;
 // reference: https://developer.hyper3d.ai/api-specification/overview_reset_v
 //            https://developer.hyper3d.ai/zh_cn/api-specification/overview_reset_v
 export const hyper3d: PlatformPlugin = {
-    name: 'hyper3d',
+    name: Hyper3dClient.symbol,
     description: 'Hyper3D - AI 3D model generation',
     website: 'https://hyper3d.ai',
     init(rawConfig) {
-        client = new Hyper3dClient(pickConfig(rawConfig, 'hyper3d'));
+        client = new Hyper3dClient(pickConfig(rawConfig, Hyper3dClient.symbol));
     },
     create(input, options) {
         return ensure().create(input, options);
@@ -186,6 +183,6 @@ export const hyper3d: PlatformPlugin = {
 };
 
 function ensure(): Hyper3dClient {
-    if (!client) throw new Error('hyper3d plugin not initialized');
+    if (!client) throw new Error(`[${Hyper3dClient.symbol}] Plugin not initialized`);
     return client;
 }

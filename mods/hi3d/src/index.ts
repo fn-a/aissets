@@ -1,4 +1,4 @@
-import { BaseApiClient, pickConfig } from '@aissets/core';
+import { BaseApiClient, pickConfig, readImageBlob } from '@aissets/core';
 import type {
     PlatformConfig,
     GenerationInput,
@@ -74,6 +74,9 @@ interface Hi3dQueryResponse {
 }
 
 class Hi3dClient extends BaseApiClient {
+    static symbol = 'hi3d';
+    symbol = Hi3dClient.symbol;
+
     private token: string | null = null;
     private expiry = 0;
     private baseUrl = '';
@@ -97,7 +100,8 @@ class Hi3dClient extends BaseApiClient {
         const clientSecret = colon >= 0 ? key.substring(colon + 1) : '';
 
         const basic = btoa(`${clientId}:${clientSecret}`);
-        const raw = await this.request<Hi3dTokenResponse>(`${BASE_PATH}/auth/token`, {
+        const url = `${this.baseUrl}${BASE_PATH}/auth/token`;
+        const res = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
@@ -106,6 +110,12 @@ class Hi3dClient extends BaseApiClient {
             body: '{}',
         });
 
+        if (!res.ok) {
+            const text = await res.text().catch(() => '');
+            throw new Error(`[${this.symbol}] Auth failed: HTTP ${res.status} ${res.statusText}: ${text}`);
+        }
+
+        const raw = (await res.json()) as Hi3dTokenResponse;
         this.token = raw.data.accessToken;
         // JWT 假设 1h 有效期，提前 1 分钟刷新
         this.expiry = Date.now() + 3_540_000;
@@ -123,15 +133,15 @@ class Hi3dClient extends BaseApiClient {
         const model = 'hitem3dv2.0';
         form.append('request_type', '3');
         form.append('model', model);
-        form.append('resolution', '1024');
+        form.append('resolution', '1536');
         form.append('format', String(FORMAT_INT[fmt] ?? 2));
 
         // 图片上传
         if (input.type === 'image') {
-            const blob = await this.fetchImage(input.url);
+            const blob = await readImageBlob(input.url);
             form.append('images', blob, 'input.png');
         } else {
-            throw new Error('Hi3D only supports image-to-3D generation');
+            throw new Error(`[${this.symbol}] Only supports image-to-3D generation`);
         }
 
         const raw = await this.sendForm<Hi3dCreateResponse>(
@@ -139,12 +149,15 @@ class Hi3dClient extends BaseApiClient {
             form,
             token,
         );
-        return { id: raw.data.task_id, status: 'pending' };
+        if (raw.code !== 200) {
+            throw new Error(`[${this.symbol}] API error[${raw.code}]: ${raw.msg}`);
+        }
+        return { id: raw.data.task_id, status: 'pending', raw: raw };
     }
 
     async status(taskId: string): Promise<TaskInfo> {
         const token = await this.auth();
-        const raw = await this.authed<Hi3dQueryResponse>(
+        const raw = await this.authedReq<Hi3dQueryResponse>(
             `${BASE_PATH}/query-task?task_id=${encodeURIComponent(taskId)}`,
             token,
         );
@@ -152,17 +165,18 @@ class Hi3dClient extends BaseApiClient {
             id: raw.data?.task_id ?? '',
             status: STATE_MAP[raw.data?.state ?? ''] ?? 'pending',
             error: raw.code !== 200 ? raw.msg : undefined,
+            raw: raw,
         };
     }
 
     async result(taskId: string): Promise<ModelResult> {
         const token = await this.auth();
-        const raw = await this.authed<Hi3dQueryResponse>(
+        const raw = await this.authedReq<Hi3dQueryResponse>(
             `${BASE_PATH}/query-task?task_id=${encodeURIComponent(taskId)}`,
             token,
         );
         if (raw.data?.state !== 'success') {
-            throw new Error(`Task ${taskId} not completed, current state: ${raw.data?.state}`);
+            throw new Error(`[${this.symbol}] Task ${taskId} not completed, current state: ${raw.data?.state}`);
         }
         const files: ModelFile[] = [];
         const url = raw.data?.url;
@@ -176,7 +190,7 @@ class Hi3dClient extends BaseApiClient {
 
     // ── 内部请求 ──
 
-    private async authed<T>(path: string, token: string): Promise<T> {
+    private async authedReq<T>(path: string, token: string): Promise<T> {
         const url = this.baseUrl ? `${this.baseUrl}${path}` : path;
         const headers: Record<string, string> = {
             Authorization: `Bearer ${token}`,
@@ -187,7 +201,7 @@ class Hi3dClient extends BaseApiClient {
             const res = await fetch(url, { headers, signal: controller.signal });
             if (!res.ok) {
                 const text = await res.text().catch(() => '');
-                throw new Error(`HTTP ${res.status} ${res.statusText}: ${text}`);
+                throw new Error(`[${this.symbol}] HTTP ${res.status} ${res.statusText}: ${text}`);
             }
             return (await res.json()) as T;
         } finally {
@@ -207,21 +221,17 @@ class Hi3dClient extends BaseApiClient {
             const res = await fetch(url, { method: 'POST', headers, body: form, signal: controller.signal });
             if (!res.ok) {
                 const text = await res.text().catch(() => '');
-                throw new Error(`HTTP ${res.status} ${res.statusText}: ${text}`);
+                throw new Error(`[${this.symbol}] HTTP ${res.status} ${res.statusText}: ${text}`);
             }
             return (await res.json()) as T;
+        } catch (err) {
+            console.error(`[${this.symbol}] POST ${url} → ${err}`);
+            throw err;
         } finally {
             clearTimeout(timer);
         }
     }
 
-    private async fetchImage(imageUrl: string): Promise<Blob> {
-        const res = await fetch(imageUrl);
-        if (!res.ok) throw new Error(`Failed to fetch image: HTTP ${res.status}`);
-        const buf = await res.arrayBuffer();
-        const ct = res.headers.get('content-type') ?? 'image/png';
-        return new Blob([buf], { type: ct });
-    }
 }
 
 // ── 插件导出 ──
@@ -233,11 +243,11 @@ let client: Hi3dClient | null = null;
 // reference: https://docs.hi3d.ai/en/api/api-reference/overview
 //            https://docs.hi3d.ai/zh/api/api-reference/overview
 export const hi3d: PlatformPlugin = {
-    name: 'hi3d',
+    name: Hi3dClient.symbol,
     description: 'Hi3D - 3D model generation',
     website: 'https://www.hi3d.ai',
     init(rawConfig) {
-        client = new Hi3dClient(pickConfig(rawConfig, 'hi3d'));
+        client = new Hi3dClient(pickConfig(rawConfig, Hi3dClient.symbol));
     },
     create(input, options) {
         return ensure().create(input, options);
@@ -254,6 +264,6 @@ export const hi3d: PlatformPlugin = {
 };
 
 function ensure(): Hi3dClient {
-    if (!client) throw new Error('hi3d plugin not initialized');
+    if (!client) throw new Error(`[${Hi3dClient.symbol}] Plugin not initialized`);
     return client;
 }

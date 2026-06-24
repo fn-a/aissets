@@ -43,6 +43,7 @@ function taskInfo(raw: MeshyTask): TaskInfo {
         progress: raw.progress,
         createdAt: raw.created_at ? new Date(raw.created_at).toISOString() : undefined,
         finishedAt: raw.finished_at ? new Date(raw.finished_at).toISOString() : undefined,
+        raw: raw,
     };
 }
 
@@ -53,6 +54,9 @@ function taskPath(taskTypes: Map<string, MeshyTaskType>, taskId: string): string
 }
 
 class MeshyClient extends BaseApiClient {
+    static readonly symbol = 'meshy';
+    symbol = MeshyClient.symbol;
+
     /** 记录每个任务的类型，status/result 需要路由到正确的端点 */
     private taskTypes = new Map<string, MeshyTaskType>();
 
@@ -94,7 +98,7 @@ class MeshyClient extends BaseApiClient {
     async result(taskId: string): Promise<ModelResult> {
         const raw = await this.request<MeshyTask>(`${taskPath(this.taskTypes, taskId)}/${taskId}`);
         if (raw.status !== 'SUCCEEDED') {
-            throw new Error(`Task ${taskId} not completed, current status: ${raw.status}`);
+            throw new Error(`[${MeshyClient.symbol}] Task ${taskId} not completed, current status: ${raw.status}`);
         }
         const files: ModelFile[] = [];
         if (raw.model_urls) {
@@ -117,11 +121,11 @@ let client: MeshyClient | null = null;
 // reference: https://docs.meshy.ai/en/api/text-to-3d
 //            https://docs.meshy.ai/zh/api/text-to-3d
 export const meshy: PlatformPlugin = {
-    name: 'meshy',
+    name: MeshyClient.name,
     description: 'Meshy - AI 3D model generation platform',
     website: 'https://www.meshy.ai',
     init(rawConfig) {
-        client = new MeshyClient(pickConfig(rawConfig, 'meshy'));
+        client = new MeshyClient(pickConfig(rawConfig, MeshyClient.symbol));
     },
     create(input, options) {
         return ensure().create(input, options);
@@ -138,6 +142,6 @@ export const meshy: PlatformPlugin = {
 };
 
 function ensure(): MeshyClient {
-    if (!client) throw new Error('meshy plugin not initialized');
+    if (!client) throw new Error(`[${MeshyClient.symbol}] Plugin not initialized`);
     return client;
 }
