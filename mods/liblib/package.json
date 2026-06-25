@@ -1,5 +1,5 @@
 {
-    "name": "@aissets/base",
+    "name": "@aissets/liblib",
     "version": "0.0.1",
     "type": "module",
     "exports": {
@@ -15,16 +15,9 @@
         "check": "tsc --noEmit"
     },
     "dependencies": {
-        "@aissets/core": "workspace:*",
-        "@aissets/hi3d": "workspace:*",
-        "@aissets/hyper3d": "workspace:*",
-        "@aissets/liblib": "workspace:*",
-        "@aissets/meshy": "workspace:*",
-        "@aissets/runninghub": "workspace:*",
-        "@aissets/tripo3d": "workspace:*"
+        "@aissets/core": "workspace:*"
     },
     "devDependencies": {
-        "@types/node": "^25.7.0",
         "typescript": "^6.0.3"
     }
 }

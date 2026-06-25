@@ -45,9 +45,15 @@ importers:
       '@aissets/hyper3d':
         specifier: workspace:*
         version: link:../mods/hyper3d
+      '@aissets/liblib':
+        specifier: workspace:*
+        version: link:../mods/liblib
       '@aissets/meshy':
         specifier: workspace:*
         version: link:../mods/meshy
+      '@aissets/runninghub':
+        specifier: workspace:*
+        version: link:../mods/runninghub
       '@aissets/tripo3d':
         specifier: workspace:*
         version: link:../mods/tripo3d
@@ -85,7 +91,27 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
 
+  mods/liblib:
+    dependencies:
+      '@aissets/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+
   mods/meshy:
+    dependencies:
+      '@aissets/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+
+  mods/runninghub:
     dependencies:
       '@aissets/core':
         specifier: workspace:*

@@ -6,12 +6,14 @@ AI 3D model generation CLI tool — create, query, and download 3D assets from m
 
 ## Supported Platforms
 
-| Platform   | Description                           |
-| ---------- | ------------------------------------- |
-| `meshy`    | Meshy - AI 3D model generation        |
-| `tripo3d`  | Tripo3D - AI 3D generation (TripoSR)  |
-| `hi3d`     | Hi3D - 3D model generation            |
-| `hyper3d`  | Hyper3D - AI 3D model generation      |
+| Platform     | Description                                    |
+| ------------ | ---------------------------------------------- |
+| `meshy`      | Meshy - AI 3D model generation                 |
+| `tripo3d`    | Tripo3D - AI 3D generation                     |
+| `hi3d`       | Hi3D - 3D model generation                     |
+| `hyper3d`    | Hyper3D - AI 3D model generation               |
+| `liblib`     | LibLib - AI image generation                   |
+| `runninghub` | RunningHub - AI image & 3D model generation    |
 
 ## Install
 
@@ -29,10 +31,12 @@ Create `config.json` in your working directory. Each platform module reads its o
 {
     "default": { "timeout": 300000 },
     "platforms": {
-        "meshy":   { "apiKey": "your-key", "baseUrl": "https://api.meshy.ai" },
-        "tripo3d": { "apiKey": "your-key", "baseUrl": "https://api.tripo3d.com" },
-        "hi3d":    { "apiKey": "client_id:client_secret", "baseUrl": "https://api.hitem3d.ai" },
-        "hyper3d": { "apiKey": "your-key", "baseUrl": "https://api.hyper3d.ai" }
+        "meshy":      { "apiKey": "your-key", "baseUrl": "https://api.meshy.ai" },
+        "tripo3d":    { "apiKey": "your-key", "baseUrl": "https://api.tripo3d.com" },
+        "hi3d":       { "apiKey": "client_id:client_secret", "baseUrl": "https://api.hitem3d.ai" },
+        "hyper3d":    { "apiKey": "your-key", "baseUrl": "https://api.hyper3d.ai" },
+        "liblib":     { "apiKey": "your-key", "baseUrl": "https://openapi.liblibai.cloud" },
+        "runninghub": { "apiKey": "your-key", "baseUrl": "https://www.runninghub.cn" }
     }
 }
 ```
